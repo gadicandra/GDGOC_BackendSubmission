@@ -122,6 +122,12 @@ export default class MenusService {
       query = query.lte('calories', maxCalInt);
     }
 
+    if (sort) {
+      const [field, order] = sort.split(':');
+      const ascending = order === 'asc';
+      query = query.order(field, { ascending });
+    }
+
     // Pagination
     const from = (pageInt - 1) * perPageInt;
     const to = from + perPageInt - 1;
@@ -173,7 +179,7 @@ export default class MenusService {
 
     const categoryCounts :Record<string, number> = {};
 
-    data.forEach((menu) => {
+    data.forEach((menu : any) => {
       const category = menu.category;
       if (categoryCounts[category]) {
         categoryCounts[category]++;
@@ -198,7 +204,7 @@ export default class MenusService {
     if (!data) return {};
 
     const groupedData: Record<string, any> = {};
-    data.forEach((menu) => {
+    data.forEach((menu : any) => {
       const category = menu.category;
 
       if (!groupedData[category]) {
