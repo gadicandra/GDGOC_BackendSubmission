@@ -85,3 +85,5 @@ if (process.env.NODE_ENV !== 'production') {
     console.log(`Server berjalan pada http://${host}:${port}`);
   });
 }
+
+export default app;
