@@ -1,11 +1,30 @@
-import ClientError from './exceptions/ClientError';
+// General Import
 import express, { Express, Request, Response, NextFunction } from 'express';
-
 import cors from 'cors';
 import dotenv from 'dotenv';
-import path from 'path';
-
 dotenv.config();
+
+// Authentications
+import AuthenticationsService from './services/supabase/databaseService/AuthenticationsService';
+import { TokenManager } from './tokenize/TokenManager';
+import AuthenticationsValidator from './validator/authentications';
+import AuthenticationsHandler from './api/authentications/handler';
+import { createAuthRoutes } from './api/authentications/routes';
+
+// Users
+import UsersService from './services/supabase/databaseService/UsersService';
+import UsersHandler from './api/users/handler';
+import { UsersValidator } from './validator/users';
+import { createUsersRoutes } from './api/users/routes';
+
+// Menus
+import MenusService from './services/supabase/databaseService/MenusService';
+import MenusHandler from './api/menu/handler';
+import { MenusValidator } from './validator/menu';
+import { createMenusRoutes } from './api/menu/routes';
+
+// Error Import
+import ClientError from './exceptions/ClientError';
 
 const init = async () => {
   const app: Express = express();
@@ -13,6 +32,35 @@ const init = async () => {
 
   app.use(cors());
   app.use(express.json());
+
+  // Service
+  const authenticationsService = new AuthenticationsService();
+  const usersService = new UsersService();
+  const menusService = new MenusService();
+
+  // Handler
+  const authenticationsHandler = new AuthenticationsHandler(
+    authenticationsService,
+    usersService,
+    TokenManager,
+    AuthenticationsValidator
+  );
+  const usersHandler = new UsersHandler(usersService, UsersValidator);
+  const menusHandler = new MenusHandler(menusService, MenusValidator);
+
+  // Router
+  const authRouter = createAuthRoutes(authenticationsHandler);
+  const usersRouter = createUsersRoutes(usersHandler);
+  const menusRouter = createMenusRoutes(menusHandler);
+
+  // Routing
+  app.use('/authentications', authRouter);
+  app.use('/users', usersRouter);
+  app.use('/menu', menusRouter);
+
+  app.get('/', (req, res) => {
+    res.send('Hello World!');
+  });
 
   app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     if (err instanceof ClientError) {
@@ -32,7 +80,8 @@ const init = async () => {
   });
 
   app.listen(port, () => {
-    console.log(`Server berjalan pada http://${process.env.HOST}:${port}`);
+    const host = process.env.HOST || 'localhost';
+    console.log(`Server berjalan pada http://${host}:${port}`);
   });
 };
 

@@ -1,10 +1,8 @@
 import ClientError from './ClientError';
 
-class AuthorizationError extends ClientError {
+export default class AuthorizationError extends ClientError {
     constructor(message: string) {
         super(message, 403);
         this.name = 'AuthorizationError';
     }
 }
-
-module.exports = AuthorizationError;

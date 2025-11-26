@@ -39,19 +39,19 @@ const validateUserPayload = ({ username, password, fullname }: { username: strin
   }
 };
 
-class UserRepository {
+export default class UsersService {
   async verifyNewUsername(username: string) {
     const { data, error } = await supabaseAdmin
-        .from('users')
+        .from('admin')
         .select('username')
         .eq('username', username)
-        .single();
+        .limit(1);
 
     if (error) {
         throw new InvariantError(error.message);
     }
 
-    if (data) {
+    if (data && data.length > 0) {
         throw new InvariantError('Gagal menambahkan user. Username sudah terdaftar');
     }
     return true;
@@ -59,12 +59,13 @@ class UserRepository {
 
   async addUser({ username, password, fullname }: { username: string, password:string, fullname:string }) {
     validateUserPayload({ username, password, fullname });
+    await this.verifyNewUsername(username);
 
     const id = `user-${nanoid(16)}`;
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const { data, error } = await supabaseAdmin
-        .from('users')
+        .from('admin')
         .insert({ id, username, password: hashedPassword, fullname })
         .select()
         .single();
@@ -78,10 +79,26 @@ class UserRepository {
 
   async verifyUserCredential(username: string, password: string) {
     const { data, error } = await supabaseAdmin
-        .from('users')
+        .from('admin')
         .select('id, password')
         .eq('username', username)
-        .single();
-  }
+        .limit(1);
 
+    if (error) {
+        throw new InvariantError(error.message);
+    }   
+
+    if (!data || data.length === 0) {
+        throw new InvariantError('Gagal memverifikasi kredensial. User tidak ditemukan');
+    }
+
+    const { id, password: hashedPassword } = data[0];
+    const isPasswordMatch = await bcrypt.compare(password, hashedPassword);
+
+    if (!isPasswordMatch) {
+        throw new InvariantError('Gagal memverifikasi kredensial. Password salah');
+    }
+
+    return { id };
+  }
 }

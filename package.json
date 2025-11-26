@@ -2,10 +2,10 @@
   "name": "gdgoc",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.ts",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
-    "start": "tsx src/index.ts",
+    "dev": "tsx watch src/server.ts",
+    "start": "tsx src/server.ts",
     "lint": "eslint ./src"
   },
   "keywords": [],
@@ -22,14 +22,14 @@
     "express": "^5.1.0",
     "joi": "^18.0.2",
     "jsonwebtoken": "^9.0.2",
-    "nanoid": "^5.1.6",
-    "redis": "^5.10.0"
+    "nanoid": "^3.3.4"
   },
   "devDependencies": {
     "@supabase/supabase-js": "latest",
     "@types/bcrypt": "^6.0.0",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.5",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.10.1",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3"
