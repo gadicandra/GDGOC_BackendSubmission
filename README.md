@@ -53,7 +53,7 @@ Ikuti langkah berikut untuk menjalankan proyek di mesin lokal:
 
 2.  **Install Dependencies**
     ```bash
-    npm install
+    pnpm install
     ```
 
 3.  **Konfigurasi Environment**
@@ -67,9 +67,9 @@ Ikuti langkah berikut untuk menjalankan proyek di mesin lokal:
 
 4.  **Jalankan Server**
     ```bash
-    npm run start
+    pnpm start
     # atau untuk mode development
-    npm run dev
+    pnpm dev
     ```
 
 ## 📚 Dokumentasi API
