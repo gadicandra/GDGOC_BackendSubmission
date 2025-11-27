@@ -1,0 +1,2276 @@
+{
+	"info": {
+		"_postman_id": "2069e794-711d-446f-9ca1-773ddc130953",
+		"name": "Menu Catalog - Postman Collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "46122344"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "[No Test] Prerequisite",
+					"item": [
+						{
+							"name": "Add User Adi (Admin)",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"username\": \"Adi\",\r\n    \"password\": \"secret\",\r\n    \"fullname\": \"Garjita Adicandra\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/users",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Login User Adi (Admin)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const { data: { accessToken } } = pm.response.json();\r",
+											"pm.environment.set('accessTokenAdi', accessToken);"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"username\": \"Adi\",\r\n    \"password\": \"secret\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL}}/authentications",
+									"host": [
+										"{{BASE_URL}}"
+									],
+									"path": [
+										"authentications"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "API Test For Video",
+			"item": [
+				{
+					"name": "(Adi) Add Another Menu With Valid Payload (POST /menu) Video",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('it should response 201 status code', () => {",
+									"    pm.expect(pm.response).to.have.status(201);",
+									"});",
+									"",
+									"pm.test('response Content-Type header should have application/json value', () => {",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');",
+									"}); ",
+									"",
+									"pm.test('response body should an object', () => {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson).to.be.an('object');",
+									"});",
+									"",
+									"const schema = {",
+									"    type: \"object\",",
+									"    properties: {",
+									"      message: { type: \"string\" },",
+									"      data: {",
+									"        type: \"object\",",
+									"        properties: {",
+									"          name: { type: \"string\" },",
+									"          category: { type: \"string\" },",
+									"          calories: { type: \"number\" },",
+									"          price: { type: \"number\" },",
+									"          ingredients: { type: \"array\" },",
+									"          description: { type: \"string\" },",
+									"          id: { type: \"number\" },",
+									"          created_at: { type: \"string\" },",
+									"          updated_at: { type: \"string\" }",
+									"        },",
+									"        required: [\"name\", \"category\", \"calories\", \"price\", \"ingredients\", \"description\", \"id\"]",
+									"      }",
+									"    },",
+									"    required: [\"message\", \"data\"]",
+									"  };",
+									"",
+									"pm.test(\"Schema is valid\", () => {",
+									"  pm.expect(pm.response.json()).to.have.jsonSchema(schema);",
+									"});",
+									"",
+									"pm.test('response body have correct property and value', () => {",
+									"    const responseJson = pm.response.json();",
+									"    const menu = responseJson.data",
+									"",
+									"    // 1. Validasi Name (String dan Value)",
+									"    pm.expect(menu.name).to.be.a('string');",
+									"    pm.expect(menu.name).to.equal('Magelangan Malatax');",
+									"",
+									"    // 2. Validasi Category",
+									"    pm.expect(menu.category).to.equal('foods');",
+									"",
+									"    // 3. Validasi Calories (Number dan Value)",
+									"    pm.expect(menu.calories).to.be.a('number');",
+									"    pm.expect(menu.calories).to.equal(600);",
+									"",
+									"    // 4. Validasi Price (Number dan Value)",
+									"    pm.expect(menu.price).to.be.a('number');",
+									"    pm.expect(menu.price).to.equal(13000.00);",
+									"",
+									"    // 5. Validasi Ingredients (Harus Array dan isinya)",
+									"    pm.expect(menu.ingredients).to.be.an('array');",
+									"    pm.expect(menu.ingredients).to.have.members([\"indomie rendang\", \"kecap\", \"sambal\", \"kerupuk\"]);",
+									"",
+									"    // 6. Validasi Description",
+									"    pm.expect(menu.description).to.be.a('string');",
+									"    pm.expect(menu.description).to.equal(\"Indomie with nasi goreng\");",
+									"});",
+									"",
+									"const responseJson = pm.response.json();",
+									"const id = responseJson.data.id",
+									"pm.environment.set('menu_id', id);"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessTokenAdi}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Magelangan Malatax\",\n  \"category\": \"foods\",\n  \"calories\": 600,\n  \"price\": 13000.00,\n  \"ingredients\": [\"indomie rendang\", \"kecap\", \"sambal\", \"kerupuk\"],\n  \"description\": \"Indomie with nasi goreng\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/menu",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"menu"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "(Adi) Update Menu With Valid ID and Valid Payload (PUT /menu/:id) Video",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('it should response 200 status code', () => {",
+									"    pm.expect(pm.response).to.have.status(200);",
+									"});",
+									"",
+									"pm.test('response Content-Type header should have application/json value', () => {",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');",
+									"}); ",
+									"",
+									"pm.test('response body should an object', () => {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson).to.be.an('object');",
+									"});",
+									"",
+									"pm.test(\"Schema is valid\", () => {",
+									"  var schema = {",
+									"    type: \"object\",",
+									"    properties: {",
+									"      message: { type: \"string\" },",
+									"      data: {",
+									"        type: \"object\",",
+									"        properties: {",
+									"          id: { type: \"number\" },",
+									"          name: { type: \"string\" },",
+									"          category: { type: \"string\" },",
+									"          calories: { type: \"number\" },",
+									"          price: { type: \"number\" },",
+									"          ingredients: { type: \"array\" },",
+									"          description: { type: \"string\" },",
+									"          created_at: { type: \"string\" },",
+									"          updated_at: { type: \"string\" }",
+									"        },",
+									"        required: [\"id\", \"name\", \"category\", \"price\"]",
+									"      }",
+									"    },",
+									"    required: [\"message\", \"data\"]",
+									"  };",
+									"",
+									"  const response = pm.response.json();",
+									"  pm.expect(pm.response.json()).to.have.jsonSchema(schema);",
+									"});",
+									"",
+									"pm.test('response body have correct property and value', () => {",
+									"    const responseJson = pm.response.json();",
+									"    const menu = responseJson.data",
+									"",
+									"    // 1. Validasi Name (String dan Value)",
+									"    pm.expect(menu.name).to.be.a('string');",
+									"    pm.expect(menu.name).to.equal('Es Kopi Susu Premium');",
+									"",
+									"    // 2. Validasi Category",
+									"    pm.expect(menu.category).to.equal('drinks');",
+									"",
+									"    // 3. Validasi Calories (Number dan Value)",
+									"    pm.expect(menu.calories).to.be.a('number');",
+									"    pm.expect(menu.calories).to.equal(190);",
+									"",
+									"    // 4. Validasi Price (Number dan Value)",
+									"    pm.expect(menu.price).to.be.a('number');",
+									"    pm.expect(menu.price).to.equal(30000.00);",
+									"",
+									"    // 5. Validasi Ingredients (Harus Array dan isinya)",
+									"    pm.expect(menu.ingredients).to.be.an('array');",
+									"    // Memastikan array memiliki anggota-anggota ini (urutan tidak masalah)",
+									"    pm.expect(menu.ingredients).to.have.members([\"coffee\", \"milk\", \"ice\", \"condensed_milk\"]);",
+									"",
+									"    // 6. Validasi Description",
+									"    pm.expect(menu.description).to.be.a('string');",
+									"    pm.expect(menu.description).to.equal(\"Premium recipe\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessTokenAdi}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Es Kopi Susu Premium\",\n  \"category\": \"drinks\",\n  \"calories\": 190,\n  \"price\": 30000.00,\n  \"ingredients\": [\"coffee\", \"milk\", \"ice\", \"condensed_milk\"],\n  \"description\": \"Premium recipe\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/menu/{{menu_id}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"menu",
+								"{{menu_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "(Adi) Delete Menu With Valid ID (DELETE /menu/:id) Video",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('it should response 200 status code', () => {",
+									"    pm.expect(pm.response).to.have.status(200);",
+									"});",
+									"",
+									"pm.test('response Content-Type header should have application/json value', () => {",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');",
+									"}); ",
+									"",
+									"pm.test('response body should an object', () => {",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson).to.be.an('object');",
+									"});",
+									"",
+									"pm.test('response body have correct property and value', () => {",
+									"    const responseJson = pm.response.json();",
+									"",
+									"    pm.expect(responseJson.status).to.equal('success');",
+									"    pm.expect(responseJson.message).to.be.a('string');",
+									"});",
+									"",
+									"pm.test(\"Response schema is valid\", function () {",
+									"    var schema = {",
+									"        type: \"object\",",
+									"        properties: {",
+									"            message: {",
+									"                type: \"string\"",
+									"            },",
+									"            status: {",
+									"                type: \"string\"",
+									"            }",
+									"        },",
+									"        required: [\"message\"]",
+									"    };",
+									"    pm.expect(pm.response.json()).to.have.jsonSchema(schema);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{accessTokenAdi}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/menu/{{menu_id}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"menu",
+								"{{menu_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Add Menu Without Authentication (POST /menu)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should response 401 status code', () => {",
+							"    pm.expect(pm.response).to.have.status(401);",
+							"});",
+							"",
+							"pm.test('response Content-Type header should have application/json value', () => {",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');",
+							"}); ",
+							"",
+							"pm.test('response body should an object', () => {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.be.an('object');",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/menu",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"menu"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "(Adi) Add Menu With Invalid Payload (POST /menu)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should response 400 status code', () => {",
+							"    pm.expect(pm.response).to.have.status(400);",
+							"});",
+							"",
+							"pm.test('response Content-Type header should have application/json value', () => {",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');",
+							"}); ",
+							"",
+							"pm.test('response body should an object', () => {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.be.an('object');",
+							"});",
+							"",
+							"pm.test('response body have correct property and value', () => {",
+							"    const responseJson = pm.response.json();",
+							"",
+							"    pm.expect(responseJson.status).to.equal('fail');",
+							"    pm.expect(responseJson.message).to.be.a('string');",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessTokenAdi}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": true,\n  \"category\": true,\n  \"calories\": -1,\n  \"price\": -1,\n  \"ingredients\": true,\n  \"description\": true\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/menu",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"menu"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "(Adi) Add Menu With Valid Payload (POST /menu)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should response 201 status code', () => {",
+							"    pm.expect(pm.response).to.have.status(201);",
+							"});",
+							"",
+							"pm.test('response Content-Type header should have application/json value', () => {",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');",
+							"}); ",
+							"",
+							"pm.test('response body should an object', () => {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.be.an('object');",
+							"});",
+							"",
+							"const schema = {",
+							"    type: \"object\",",
+							"    properties: {",
+							"      message: { type: \"string\" },",
+							"      data: {",
+							"        type: \"object\",",
+							"        properties: {",
+							"          name: { type: \"string\" },",
+							"          category: { type: \"string\" },",
+							"          calories: { type: \"number\" },",
+							"          price: { type: \"number\" },",
+							"          ingredients: { type: \"array\" },",
+							"          description: { type: \"string\" },",
+							"          id: { type: \"number\" },",
+							"          created_at: { type: \"string\" },",
+							"          updated_at: { type: \"string\" }",
+							"        },",
+							"        required: [\"name\", \"category\", \"calories\", \"price\", \"ingredients\", \"description\", \"id\"]",
+							"      }",
+							"    },",
+							"    required: [\"message\", \"data\"]",
+							"  };",
+							"",
+							"pm.test(\"Schema is valid\", () => {",
+							"  pm.expect(pm.response.json()).to.have.jsonSchema(schema);",
+							"});",
+							"",
+							"pm.test('response body have correct property and value', () => {",
+							"    const responseJson = pm.response.json();",
+							"    const menu = responseJson.data",
+							"",
+							"    // 1. Validasi Name (String dan Value)",
+							"    pm.expect(menu.name).to.be.a('string');",
+							"    pm.expect(menu.name).to.equal('Es Kopi Susu');",
+							"",
+							"    // 2. Validasi Category",
+							"    pm.expect(menu.category).to.equal('drinks');",
+							"",
+							"    // 3. Validasi Calories (Number dan Value)",
+							"    pm.expect(menu.calories).to.be.a('number');",
+							"    pm.expect(menu.calories).to.equal(180);",
+							"",
+							"    // 4. Validasi Price (Number dan Value)",
+							"    pm.expect(menu.price).to.be.a('number');",
+							"    pm.expect(menu.price).to.equal(25000.00);",
+							"",
+							"    // 5. Validasi Ingredients (Harus Array dan isinya)",
+							"    pm.expect(menu.ingredients).to.be.an('array');",
+							"    // Memastikan array memiliki anggota-anggota ini (urutan tidak masalah)",
+							"    pm.expect(menu.ingredients).to.have.members([\"coffee\", \"milk\", \"ice\", \"sugar\"]);",
+							"",
+							"    // 6. Validasi Description",
+							"    pm.expect(menu.description).to.be.a('string');",
+							"    pm.expect(menu.description).to.equal('Classic iced coffee with milk');",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessTokenAdi}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Es Kopi Susu\",\n  \"category\": \"drinks\",\n  \"calories\": 180,\n  \"price\": 25000.00,\n  \"ingredients\": [\"coffee\", \"milk\", \"ice\", \"sugar\"],\n  \"description\": \"Classic iced coffee with milk\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/menu",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"menu"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "(Adi) Add Another Menu With Valid Payload (POST /menu)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should response 201 status code', () => {",
+							"    pm.expect(pm.response).to.have.status(201);",
+							"});",
+							"",
+							"pm.test('response Content-Type header should have application/json value', () => {",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');",
+							"}); ",
+							"",
+							"pm.test('response body should an object', () => {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.be.an('object');",
+							"});",
+							"",
+							"const schema = {",
+							"    type: \"object\",",
+							"    properties: {",
+							"      message: { type: \"string\" },",
+							"      data: {",
+							"        type: \"object\",",
+							"        properties: {",
+							"          name: { type: \"string\" },",
+							"          category: { type: \"string\" },",
+							"          calories: { type: \"number\" },",
+							"          price: { type: \"number\" },",
+							"          ingredients: { type: \"array\" },",
+							"          description: { type: \"string\" },",
+							"          id: { type: \"number\" },",
+							"          created_at: { type: \"string\" },",
+							"          updated_at: { type: \"string\" }",
+							"        },",
+							"        required: [\"name\", \"category\", \"calories\", \"price\", \"ingredients\", \"description\", \"id\"]",
+							"      }",
+							"    },",
+							"    required: [\"message\", \"data\"]",
+							"  };",
+							"",
+							"pm.test(\"Schema is valid\", () => {",
+							"  pm.expect(pm.response.json()).to.have.jsonSchema(schema);",
+							"});",
+							"",
+							"pm.test('response body have correct property and value', () => {",
+							"    const responseJson = pm.response.json();",
+							"    const menu = responseJson.data",
+							"",
+							"    // 1. Validasi Name (String dan Value)",
+							"    pm.expect(menu.name).to.be.a('string');",
+							"    pm.expect(menu.name).to.equal('Magelangan Malatax');",
+							"",
+							"    // 2. Validasi Category",
+							"    pm.expect(menu.category).to.equal('foods');",
+							"",
+							"    // 3. Validasi Calories (Number dan Value)",
+							"    pm.expect(menu.calories).to.be.a('number');",
+							"    pm.expect(menu.calories).to.equal(600);",
+							"",
+							"    // 4. Validasi Price (Number dan Value)",
+							"    pm.expect(menu.price).to.be.a('number');",
+							"    pm.expect(menu.price).to.equal(13000.00);",
+							"",
+							"    // 5. Validasi Ingredients (Harus Array dan isinya)",
+							"    pm.expect(menu.ingredients).to.be.an('array');",
+							"    pm.expect(menu.ingredients).to.have.members([\"indomie rendang\", \"kecap\", \"sambal\", \"kerupuk\"]);",
+							"",
+							"    // 6. Validasi Description",
+							"    pm.expect(menu.description).to.be.a('string');",
+							"    pm.expect(menu.description).to.equal(\"Indomie with nasi goreng\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessTokenAdi}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Magelangan Malatax\",\n  \"category\": \"foods\",\n  \"calories\": 600,\n  \"price\": 13000.00,\n  \"ingredients\": [\"indomie rendang\", \"kecap\", \"sambal\", \"kerupuk\"],\n  \"description\": \"Indomie with nasi goreng\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/menu",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"menu"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Menu (GET /menu)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should response 200 status code', () => {",
+							"    pm.expect(pm.response).to.have.status(200);",
+							"});",
+							"",
+							"pm.test('response Content-Type header should have application/json value', () => {",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');",
+							"}); ",
+							"",
+							"pm.test('response body should an object', () => {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.be.an('object');",
+							"});",
+							"",
+							"pm.test(\"Response schema is valid\", () => {",
+							"  var schema = {",
+							"    type: \"object\",",
+							"    properties: {",
+							"      data: {",
+							"        type: \"array\",",
+							"        items: {",
+							"          type: \"object\",",
+							"          properties: {",
+							"            id: { type: \"number\" },",
+							"            name: { type: \"string\" },",
+							"            category: { type: \"string\" },",
+							"            calories: { type: \"number\" },",
+							"            price: { type: \"number\" },",
+							"            ingredients: { type: \"array\" },",
+							"            description: { type: \"string\" },",
+							"            created_at: { type: \"string\" },",
+							"            updated_at: { type: \"string\" }",
+							"          },",
+							"          required: [\"id\", \"name\", \"category\", \"calories\", \"price\"]",
+							"        }",
+							"      }",
+							"    },",
+							"    required: [\"data\"]",
+							"  };",
+							"",
+							"  pm.expect(pm.response.json()).to.have.jsonSchema(schema);",
+							"});",
+							"",
+							"// Set collection variable menu_id from first item",
+							"const response = pm.response.json();",
+							"if (response.data && response.data.length > 0) {",
+							"    pm.collectionVariables.set(\"menu_id\", response.data[0].id);",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/menu",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"menu"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List Menu (GET /menu) - with filters & pagination",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should response 200 status code', () => {",
+							"    pm.expect(pm.response).to.have.status(200);",
+							"});",
+							"",
+							"pm.test('response Content-Type header should have application/json value', () => {",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');",
+							"}); ",
+							"",
+							"pm.test('response body should an object', () => {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.be.an('object');",
+							"});",
+							"",
+							"const response = pm.response.json();",
+							"",
+							"pm.test(\"Response schema is valid\", () => {",
+							"  var schema = {",
+							"    type: \"object\",",
+							"    properties: {",
+							"      data: {",
+							"        type: \"array\",",
+							"        items: {",
+							"          type: \"object\",",
+							"          properties: {",
+							"            id: { type: \"number\" },",
+							"            name: { type: \"string\" },",
+							"            category: { type: \"string\" },",
+							"            calories: { type: \"number\" },",
+							"            price: { type: \"number\" },",
+							"            ingredients: { type: \"array\" },",
+							"            description: { type: \"string\" }",
+							"          },",
+							"          required: [\"id\", \"name\", \"category\", \"price\"]",
+							"        }",
+							"      },",
+							"      pagination: {",
+							"        type: \"object\",",
+							"        properties: {",
+							"          total: { type: \"number\" },",
+							"          page: { type: \"number\" },",
+							"          per_page: { type: \"number\" },",
+							"          total_pages: { type: \"number\" }",
+							"        }",
+							"      }",
+							"    },",
+							"    required: [\"data\"]",
+							"  };",
+							"",
+							"  pm.expect(pm.response.json()).to.have.jsonSchema(schema);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/menu?q={{q}}&category={{category}}&min_price={{min_price}}&max_price={{max_price}}&max_cal={{max_cal}}&page={{page}}&per_page={{per_page}}&sort={{sort}}",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"menu"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "{{q}}"
+						},
+						{
+							"key": "category",
+							"value": "{{category}}"
+						},
+						{
+							"key": "min_price",
+							"value": "{{min_price}}"
+						},
+						{
+							"key": "max_price",
+							"value": "{{max_price}}"
+						},
+						{
+							"key": "max_cal",
+							"value": "{{max_cal}}"
+						},
+						{
+							"key": "page",
+							"value": "{{page}}"
+						},
+						{
+							"key": "per_page",
+							"value": "{{per_page}}"
+						},
+						{
+							"key": "sort",
+							"value": "{{sort}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Search Menu by ID (GET /menu/:id)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should response 200 status code', () => {",
+							"    pm.expect(pm.response).to.have.status(200);",
+							"});",
+							"",
+							"pm.test('response Content-Type header should have application/json value', () => {",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');",
+							"}); ",
+							"",
+							"pm.test('response body should an object', () => {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.be.an('object');",
+							"});",
+							"",
+							"pm.test(\"Response schema is valid\", () => {",
+							"  var schema = {",
+							"    type: \"object\",",
+							"    properties: {",
+							"      data: {",
+							"        type: \"object\",",
+							"        properties: {",
+							"          id: { type: \"number\" },",
+							"          name: { type: \"string\" },",
+							"          category: { type: \"string\" },",
+							"          calories: { type: \"number\" },",
+							"          price: { type: \"number\" },",
+							"          ingredients: { type: \"array\" },",
+							"          description: { type: \"string\" }",
+							"        },",
+							"        required: [\"id\", \"name\", \"category\", \"price\"]",
+							"      }",
+							"    },",
+							"    required: [\"data\"]",
+							"  };",
+							"",
+							"  const response = pm.response.json();",
+							"  pm.expect(pm.response.json()).to.have.jsonSchema(schema);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/menu/{{menu_id}}",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"menu",
+						"{{menu_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Menu Without Authentication (PUT /menu/:id)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should response 401 status code', () => {",
+							"    pm.expect(pm.response).to.have.status(401);",
+							"});",
+							"",
+							"pm.test('response Content-Type header should have application/json value', () => {",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');",
+							"}); ",
+							"",
+							"pm.test('response body should an object', () => {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.be.an('object');",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Es Kopi Susu Premium\",\n  \"category\": \"drinks\",\n  \"calories\": 190,\n  \"price\": 30000.00,\n  \"ingredients\": [\"coffee\", \"milk\", \"ice\", \"condensed_milk\"],\n  \"description\": \"Premium recipe\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/menu/{{menu_id}}",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"menu",
+						"{{menu_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "(Adi) Update Menu With Invalid ID (PUT /menu/:id)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should response 404 status code', () => {",
+							"    pm.expect(pm.response).to.have.status(404);",
+							"});",
+							"",
+							"pm.test('response Content-Type header should have application/json value', () => {",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');",
+							"}); ",
+							"",
+							"pm.test('response body should an object', () => {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.be.an('object');",
+							"});",
+							"",
+							"pm.test('response body have correct property and value', () => {",
+							"    const responseJson = pm.response.json();",
+							"",
+							"    pm.expect(responseJson.status).to.equal('fail');",
+							"    pm.expect(responseJson.message).to.be.a('string');",
+							"});",
+							"",
+							"pm.test(\"Message is a non-empty string\", () => {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.message).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Message should not be empty\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessTokenAdi}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Es Kopi Susu Premium\",\n  \"category\": \"drinks\",\n  \"calories\": 190,\n  \"price\": 30000.00,\n  \"ingredients\": [\"coffee\", \"milk\", \"ice\", \"condensed_milk\"],\n  \"description\": \"Premium recipe\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/menu/99999",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"menu",
+						"99999"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "(Adi) Update Menu With Valid ID and Valid Payload (PUT /menu/:id)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should response 200 status code', () => {",
+							"    pm.expect(pm.response).to.have.status(200);",
+							"});",
+							"",
+							"pm.test('response Content-Type header should have application/json value', () => {",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');",
+							"}); ",
+							"",
+							"pm.test('response body should an object', () => {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.be.an('object');",
+							"});",
+							"",
+							"pm.test(\"Schema is valid\", () => {",
+							"  var schema = {",
+							"    type: \"object\",",
+							"    properties: {",
+							"      message: { type: \"string\" },",
+							"      data: {",
+							"        type: \"object\",",
+							"        properties: {",
+							"          id: { type: \"number\" },",
+							"          name: { type: \"string\" },",
+							"          category: { type: \"string\" },",
+							"          calories: { type: \"number\" },",
+							"          price: { type: \"number\" },",
+							"          ingredients: { type: \"array\" },",
+							"          description: { type: \"string\" },",
+							"          created_at: { type: \"string\" },",
+							"          updated_at: { type: \"string\" }",
+							"        },",
+							"        required: [\"id\", \"name\", \"category\", \"price\"]",
+							"      }",
+							"    },",
+							"    required: [\"message\", \"data\"]",
+							"  };",
+							"",
+							"  const response = pm.response.json();",
+							"  pm.expect(pm.response.json()).to.have.jsonSchema(schema);",
+							"});",
+							"",
+							"pm.test('response body have correct property and value', () => {",
+							"    const responseJson = pm.response.json();",
+							"    const menu = responseJson.data",
+							"",
+							"    // 1. Validasi Name (String dan Value)",
+							"    pm.expect(menu.name).to.be.a('string');",
+							"    pm.expect(menu.name).to.equal('Es Kopi Susu Premium');",
+							"",
+							"    // 2. Validasi Category",
+							"    pm.expect(menu.category).to.equal('drinks');",
+							"",
+							"    // 3. Validasi Calories (Number dan Value)",
+							"    pm.expect(menu.calories).to.be.a('number');",
+							"    pm.expect(menu.calories).to.equal(190);",
+							"",
+							"    // 4. Validasi Price (Number dan Value)",
+							"    pm.expect(menu.price).to.be.a('number');",
+							"    pm.expect(menu.price).to.equal(30000.00);",
+							"",
+							"    // 5. Validasi Ingredients (Harus Array dan isinya)",
+							"    pm.expect(menu.ingredients).to.be.an('array');",
+							"    // Memastikan array memiliki anggota-anggota ini (urutan tidak masalah)",
+							"    pm.expect(menu.ingredients).to.have.members([\"coffee\", \"milk\", \"ice\", \"condensed_milk\"]);",
+							"",
+							"    // 6. Validasi Description",
+							"    pm.expect(menu.description).to.be.a('string');",
+							"    pm.expect(menu.description).to.equal(\"Premium recipe\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessTokenAdi}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Es Kopi Susu Premium\",\n  \"category\": \"drinks\",\n  \"calories\": 190,\n  \"price\": 30000.00,\n  \"ingredients\": [\"coffee\", \"milk\", \"ice\", \"condensed_milk\"],\n  \"description\": \"Premium recipe\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/menu/{{menu_id}}",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"menu",
+						"{{menu_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Menu Without Authentication (DELETE /menu/:id)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should response 401 status code', () => {",
+							"    pm.expect(pm.response).to.have.status(401);",
+							"});",
+							"",
+							"pm.test('response Content-Type header should have application/json value', () => {",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');",
+							"}); ",
+							"",
+							"pm.test('response body should an object', () => {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.be.an('object');",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/menu/{{menu_id}}",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"menu",
+						"{{menu_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "(Adi) Delete Menu With Invalid ID (DELETE /menu/:id)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should response 404 status code', () => {",
+							"    pm.expect(pm.response).to.have.status(404);",
+							"});",
+							"",
+							"pm.test('response Content-Type header should have application/json value', () => {",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');",
+							"}); ",
+							"",
+							"pm.test('response body should an object', () => {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.be.an('object');",
+							"});",
+							"",
+							"pm.test('response body have correct property and value', () => {",
+							"    const responseJson = pm.response.json();",
+							"",
+							"    pm.expect(responseJson.status).to.equal('fail');",
+							"    pm.expect(responseJson.message).to.be.a('string');",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessTokenAdi}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/menu/99999",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"menu",
+						"99999"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "(Adi) Delete Menu With Valid ID (DELETE /menu/:id)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should response 200 status code', () => {",
+							"    pm.expect(pm.response).to.have.status(200);",
+							"});",
+							"",
+							"pm.test('response Content-Type header should have application/json value', () => {",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');",
+							"}); ",
+							"",
+							"pm.test('response body should an object', () => {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.be.an('object');",
+							"});",
+							"",
+							"pm.test('response body have correct property and value', () => {",
+							"    const responseJson = pm.response.json();",
+							"",
+							"    pm.expect(responseJson.status).to.equal('success');",
+							"    pm.expect(responseJson.message).to.be.a('string');",
+							"});",
+							"",
+							"pm.test(\"Response schema is valid\", function () {",
+							"    var schema = {",
+							"        type: \"object\",",
+							"        properties: {",
+							"            message: {",
+							"                type: \"string\"",
+							"            },",
+							"            status: {",
+							"                type: \"string\"",
+							"            }",
+							"        },",
+							"        required: [\"message\"]",
+							"    };",
+							"    pm.expect(pm.response.json()).to.have.jsonSchema(schema);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessTokenAdi}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/menu/{{menu_id}}",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"menu",
+						"{{menu_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Not Found Menu",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should response 404 status code', () => {",
+							"    pm.expect(pm.response).to.have.status(404);",
+							"});",
+							"",
+							"pm.test('response Content-Type header should have application/json value', () => {",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');",
+							"}); ",
+							"",
+							"pm.test('response body should an object', () => {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.be.an('object');",
+							"});",
+							"",
+							"pm.test('response body have correct property and value', () => {",
+							"    const responseJson = pm.response.json();",
+							"",
+							"    pm.expect(responseJson.status).to.equal('fail');",
+							"    pm.expect(responseJson.message).to.be.a('string');",
+							"});",
+							"",
+							"pm.test(\"Message is a non-empty string\", () => {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.message).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Message should not be empty\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/menu/99999",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"menu",
+						"99999"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "(Adi) 1 Add Menu With Valid Payload (POST /menu)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should response 201 status code', () => {",
+							"    pm.expect(pm.response).to.have.status(201);",
+							"});",
+							"",
+							"pm.test('response Content-Type header should have application/json value', () => {",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');",
+							"}); ",
+							"",
+							"pm.test('response body should an object', () => {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.be.an('object');",
+							"});",
+							"",
+							"const schema = {",
+							"    type: \"object\",",
+							"    properties: {",
+							"      message: { type: \"string\" },",
+							"      data: {",
+							"        type: \"object\",",
+							"        properties: {",
+							"          name: { type: \"string\" },",
+							"          category: { type: \"string\" },",
+							"          calories: { type: \"number\" },",
+							"          price: { type: \"number\" },",
+							"          ingredients: { type: \"array\" },",
+							"          description: { type: \"string\" },",
+							"          id: { type: \"number\" },",
+							"          created_at: { type: \"string\" },",
+							"          updated_at: { type: \"string\" }",
+							"        },",
+							"        required: [\"name\", \"category\", \"calories\", \"price\", \"ingredients\", \"description\", \"id\"]",
+							"      }",
+							"    },",
+							"    required: [\"message\", \"data\"]",
+							"  };",
+							"",
+							"pm.test(\"Schema is valid\", () => {",
+							"  pm.expect(pm.response.json()).to.have.jsonSchema(schema);",
+							"});",
+							"",
+							"pm.test('response body have correct property and value - Matcha Latte', () => {",
+							"    const responseJson = pm.response.json();",
+							"    const menu = responseJson.data;",
+							"",
+							"    // 1. Validasi Name",
+							"    pm.expect(menu.name).to.be.a('string');",
+							"    pm.expect(menu.name).to.equal('Matcha Latte');",
+							"",
+							"    // 2. Validasi Category",
+							"    pm.expect(menu.category).to.equal('drinks');",
+							"",
+							"    // 3. Validasi Calories",
+							"    pm.expect(menu.calories).to.be.a('number');",
+							"    pm.expect(menu.calories).to.equal(210);",
+							"",
+							"    // 4. Validasi Price",
+							"    pm.expect(menu.price).to.be.a('number');",
+							"    pm.expect(menu.price).to.equal(28000.00);",
+							"",
+							"    // 5. Validasi Ingredients",
+							"    pm.expect(menu.ingredients).to.be.an('array');",
+							"    pm.expect(menu.ingredients).to.have.members([\"matcha powder\", \"milk\", \"sugar\", \"ice\"]);",
+							"",
+							"    // 6. Validasi Description",
+							"    pm.expect(menu.description).to.be.a('string');",
+							"    pm.expect(menu.description).to.equal('Creamy and earthy green tea latte');",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessTokenAdi}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Matcha Latte\",\n  \"category\": \"drinks\",\n  \"calories\": 210,\n  \"price\": 28000.00,\n  \"ingredients\": [\"matcha powder\", \"milk\", \"sugar\", \"ice\"],\n  \"description\": \"Creamy and earthy green tea latte\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/menu",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"menu"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "(Adi) 2 Add Menu With Valid Payload (POST /menu)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should response 201 status code', () => {",
+							"    pm.expect(pm.response).to.have.status(201);",
+							"});",
+							"",
+							"pm.test('response Content-Type header should have application/json value', () => {",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');",
+							"}); ",
+							"",
+							"pm.test('response body should an object', () => {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.be.an('object');",
+							"});",
+							"",
+							"const schema = {",
+							"    type: \"object\",",
+							"    properties: {",
+							"      message: { type: \"string\" },",
+							"      data: {",
+							"        type: \"object\",",
+							"        properties: {",
+							"          name: { type: \"string\" },",
+							"          category: { type: \"string\" },",
+							"          calories: { type: \"number\" },",
+							"          price: { type: \"number\" },",
+							"          ingredients: { type: \"array\" },",
+							"          description: { type: \"string\" },",
+							"          id: { type: \"number\" },",
+							"          created_at: { type: \"string\" },",
+							"          updated_at: { type: \"string\" }",
+							"        },",
+							"        required: [\"name\", \"category\", \"calories\", \"price\", \"ingredients\", \"description\", \"id\"]",
+							"      }",
+							"    },",
+							"    required: [\"message\", \"data\"]",
+							"  };",
+							"",
+							"pm.test(\"Schema is valid\", () => {",
+							"  pm.expect(pm.response.json()).to.have.jsonSchema(schema);",
+							"});",
+							"",
+							"pm.test('response body have correct property and value - Croissant Butter', () => {",
+							"    const responseJson = pm.response.json();",
+							"    const menu = responseJson.data;",
+							"",
+							"    // 1. Validasi Name",
+							"    pm.expect(menu.name).to.be.a('string');",
+							"    pm.expect(menu.name).to.equal('Croissant Butter');",
+							"",
+							"    // 2. Validasi Category",
+							"    pm.expect(menu.category).to.equal('food');",
+							"",
+							"    // 3. Validasi Calories",
+							"    pm.expect(menu.calories).to.be.a('number');",
+							"    pm.expect(menu.calories).to.equal(240);",
+							"",
+							"    // 4. Validasi Price",
+							"    pm.expect(menu.price).to.be.a('number');",
+							"    pm.expect(menu.price).to.equal(22000.00);",
+							"",
+							"    // 5. Validasi Ingredients",
+							"    pm.expect(menu.ingredients).to.be.an('array');",
+							"    pm.expect(menu.ingredients).to.have.members([\"flour\", \"butter\", \"milk\", \"yeast\"]);",
+							"",
+							"    // 6. Validasi Description",
+							"    pm.expect(menu.description).to.be.a('string');",
+							"    pm.expect(menu.description).to.equal('Flaky and buttery french pastry');",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessTokenAdi}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Croissant Butter\",\n    \"category\": \"food\",\n    \"calories\": 240,\n    \"price\": 22000.00,\n    \"ingredients\": [\"flour\", \"butter\", \"milk\", \"yeast\"],\n    \"description\": \"Flaky and buttery french pastry\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/menu",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"menu"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "(Adi) 3 Add Menu With Valid Payload (POST /menu)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should response 201 status code', () => {",
+							"    pm.expect(pm.response).to.have.status(201);",
+							"});",
+							"",
+							"pm.test('response Content-Type header should have application/json value', () => {",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');",
+							"}); ",
+							"",
+							"pm.test('response body should an object', () => {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.be.an('object');",
+							"});",
+							"",
+							"const schema = {",
+							"    type: \"object\",",
+							"    properties: {",
+							"      message: { type: \"string\" },",
+							"      data: {",
+							"        type: \"object\",",
+							"        properties: {",
+							"          name: { type: \"string\" },",
+							"          category: { type: \"string\" },",
+							"          calories: { type: \"number\" },",
+							"          price: { type: \"number\" },",
+							"          ingredients: { type: \"array\" },",
+							"          description: { type: \"string\" },",
+							"          id: { type: \"number\" },",
+							"          created_at: { type: \"string\" },",
+							"          updated_at: { type: \"string\" }",
+							"        },",
+							"        required: [\"name\", \"category\", \"calories\", \"price\", \"ingredients\", \"description\", \"id\"]",
+							"      }",
+							"    },",
+							"    required: [\"message\", \"data\"]",
+							"  };",
+							"",
+							"pm.test(\"Schema is valid\", () => {",
+							"  pm.expect(pm.response.json()).to.have.jsonSchema(schema);",
+							"});",
+							"",
+							"pm.test('response body have correct property and value - Lychee Tea', () => {",
+							"    const responseJson = pm.response.json();",
+							"    const menu = responseJson.data;",
+							"",
+							"    // 1. Validasi Name",
+							"    pm.expect(menu.name).to.be.a('string');",
+							"    pm.expect(menu.name).to.equal('Lychee Tea');",
+							"",
+							"    // 2. Validasi Category",
+							"    pm.expect(menu.category).to.equal('drinks');",
+							"",
+							"    // 3. Validasi Calories",
+							"    pm.expect(menu.calories).to.be.a('number');",
+							"    pm.expect(menu.calories).to.equal(120);",
+							"",
+							"    // 4. Validasi Price",
+							"    pm.expect(menu.price).to.be.a('number');",
+							"    pm.expect(menu.price).to.equal(23000.00);",
+							"",
+							"    // 5. Validasi Ingredients",
+							"    pm.expect(menu.ingredients).to.be.an('array');",
+							"    pm.expect(menu.ingredients).to.have.members([\"black tea\", \"lychee syrup\", \"whole lychee\", \"ice\"]);",
+							"",
+							"    // 6. Validasi Description",
+							"    pm.expect(menu.description).to.be.a('string');",
+							"    pm.expect(menu.description).to.equal('Sweet and refreshing tea with lychee fruit');",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessTokenAdi}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Lychee Tea\",\n    \"category\": \"drinks\",\n    \"calories\": 120,\n    \"price\": 23000.00,\n    \"ingredients\": [\"black tea\", \"lychee syrup\", \"whole lychee\", \"ice\"],\n    \"description\": \"Sweet and refreshing tea with lychee fruit\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/menu",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"menu"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "(Adi) 4 Add Menu With Valid Payload (POST /menu)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should response 201 status code', () => {",
+							"    pm.expect(pm.response).to.have.status(201);",
+							"});",
+							"",
+							"pm.test('response Content-Type header should have application/json value', () => {",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');",
+							"}); ",
+							"",
+							"pm.test('response body should an object', () => {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.be.an('object');",
+							"});",
+							"",
+							"const schema = {",
+							"    type: \"object\",",
+							"    properties: {",
+							"      message: { type: \"string\" },",
+							"      data: {",
+							"        type: \"object\",",
+							"        properties: {",
+							"          name: { type: \"string\" },",
+							"          category: { type: \"string\" },",
+							"          calories: { type: \"number\" },",
+							"          price: { type: \"number\" },",
+							"          ingredients: { type: \"array\" },",
+							"          description: { type: \"string\" },",
+							"          id: { type: \"number\" },",
+							"          created_at: { type: \"string\" },",
+							"          updated_at: { type: \"string\" }",
+							"        },",
+							"        required: [\"name\", \"category\", \"calories\", \"price\", \"ingredients\", \"description\", \"id\"]",
+							"      }",
+							"    },",
+							"    required: [\"message\", \"data\"]",
+							"  };",
+							"",
+							"pm.test(\"Schema is valid\", () => {",
+							"  pm.expect(pm.response.json()).to.have.jsonSchema(schema);",
+							"});",
+							"",
+							"pm.test('response body have correct property and value - Beef Burger', () => {",
+							"    const responseJson = pm.response.json();",
+							"    const menu = responseJson.data;",
+							"",
+							"    // 1. Validasi Name",
+							"    pm.expect(menu.name).to.be.a('string');",
+							"    pm.expect(menu.name).to.equal('Beef Burger');",
+							"",
+							"    // 2. Validasi Category",
+							"    pm.expect(menu.category).to.equal('food');",
+							"",
+							"    // 3. Validasi Calories",
+							"    pm.expect(menu.calories).to.be.a('number');",
+							"    pm.expect(menu.calories).to.equal(450);",
+							"",
+							"    // 4. Validasi Price",
+							"    pm.expect(menu.price).to.be.a('number');",
+							"    pm.expect(menu.price).to.equal(45000.00);",
+							"",
+							"    // 5. Validasi Ingredients",
+							"    pm.expect(menu.ingredients).to.be.an('array');",
+							"    pm.expect(menu.ingredients).to.have.members([\"bun\", \"beef patty\", \"lettuce\", \"cheese\", \"sauce\"]);",
+							"",
+							"    // 6. Validasi Description",
+							"    pm.expect(menu.description).to.be.a('string');",
+							"    pm.expect(menu.description).to.equal('Juicy beef burger with fresh vegetables');",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessTokenAdi}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Beef Burger\",\n    \"category\": \"food\",\n    \"calories\": 450,\n    \"price\": 45000.00,\n    \"ingredients\": [\"bun\", \"beef patty\", \"lettuce\", \"cheese\", \"sauce\"],\n    \"description\": \"Juicy beef burger with fresh vegetables\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/menu",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"menu"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "(Adi) 5 Add Menu With Valid Payload (POST /menu)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should response 201 status code', () => {",
+							"    pm.expect(pm.response).to.have.status(201);",
+							"});",
+							"",
+							"pm.test('response Content-Type header should have application/json value', () => {",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');",
+							"}); ",
+							"",
+							"pm.test('response body should an object', () => {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.be.an('object');",
+							"});",
+							"",
+							"const schema = {",
+							"    type: \"object\",",
+							"    properties: {",
+							"      message: { type: \"string\" },",
+							"      data: {",
+							"        type: \"object\",",
+							"        properties: {",
+							"          name: { type: \"string\" },",
+							"          category: { type: \"string\" },",
+							"          calories: { type: \"number\" },",
+							"          price: { type: \"number\" },",
+							"          ingredients: { type: \"array\" },",
+							"          description: { type: \"string\" },",
+							"          id: { type: \"number\" },",
+							"          created_at: { type: \"string\" },",
+							"          updated_at: { type: \"string\" }",
+							"        },",
+							"        required: [\"name\", \"category\", \"calories\", \"price\", \"ingredients\", \"description\", \"id\"]",
+							"      }",
+							"    },",
+							"    required: [\"message\", \"data\"]",
+							"  };",
+							"",
+							"pm.test(\"Schema is valid\", () => {",
+							"  pm.expect(pm.response.json()).to.have.jsonSchema(schema);",
+							"});",
+							"",
+							"pm.test('response body have correct property and value - Choco Muffin', () => {",
+							"    const responseJson = pm.response.json();",
+							"    const menu = responseJson.data;",
+							"",
+							"    // 1. Validasi Name",
+							"    pm.expect(menu.name).to.be.a('string');",
+							"    pm.expect(menu.name).to.equal('Choco Muffin');",
+							"",
+							"    // 2. Validasi Category",
+							"    pm.expect(menu.category).to.equal('food');",
+							"",
+							"    // 3. Validasi Calories",
+							"    pm.expect(menu.calories).to.be.a('number');",
+							"    pm.expect(menu.calories).to.equal(320);",
+							"",
+							"    // 4. Validasi Price",
+							"    pm.expect(menu.price).to.be.a('number');",
+							"    pm.expect(menu.price).to.equal(18000.00);",
+							"",
+							"    // 5. Validasi Ingredients",
+							"    pm.expect(menu.ingredients).to.be.an('array');",
+							"    pm.expect(menu.ingredients).to.have.members([\"flour\", \"cocoa powder\", \"choco chips\", \"egg\", \"butter\"]);",
+							"",
+							"    // 6. Validasi Description",
+							"    pm.expect(menu.description).to.be.a('string');",
+							"    pm.expect(menu.description).to.equal('Soft muffin rich in chocolate flavor');",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{accessTokenAdi}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Choco Muffin\",\n    \"category\": \"food\",\n    \"calories\": 320,\n    \"price\": 18000.00,\n    \"ingredients\": [\"flour\", \"cocoa powder\", \"choco chips\", \"egg\", \"butter\"],\n    \"description\": \"Soft muffin rich in chocolate flavor\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URL}}/menu",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"menu"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Group By Category - counts (GET /menu/group-by-category?mode=count)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('it should response 200 status code', () => {",
+							"    pm.expect(pm.response).to.have.status(200);",
+							"});",
+							"",
+							"pm.test('response Content-Type header should have application/json value', () => {",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.includes('application/json');",
+							"}); ",
+							"",
+							"pm.test('response body should an object', () => {",
+							"    const responseJson = pm.response.json();",
+							"    pm.expect(responseJson).to.be.an('object');",
+							"});",
+							"",
+							"pm.test(\"Response schema is valid\", () => {",
+							"  var schema = {",
+							"    type: \"object\",",
+							"    properties: {",
+							"      data: {",
+							"        type: \"object\",",
+							"        additionalProperties: { type: \"number\" }",
+							"      }",
+							"    },",
+							"    required: [\"data\"]",
+							"  };",
+							"",
+							"  var response = pm.response.json();",
+							"  pm.expect(pm.response.json()).to.have.jsonSchema(schema);",
+							"});",
+							"",
+							"pm.test(\"Data contains category counts\", () => {",
+							"    const responseData = pm.response.json();",
+							"    pm.expect(responseData.data).to.be.an('object');",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/menu/group-by-category?mode=count",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"menu",
+						"group-by-category"
+					],
+					"query": [
+						{
+							"key": "mode",
+							"value": "count"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Group By Category - list (GET /menu/group-by-category?mode=list&per_category=5)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response schema is valid\", function () {",
+							"  var schema = {",
+							"    type: \"object\",",
+							"    properties: {",
+							"      data: {",
+							"        type: \"object\",",
+							"        additionalProperties: {",
+							"          type: \"array\",",
+							"          items: {",
+							"            type: \"object\",",
+							"            properties: {",
+							"              id: { type: \"number\" },",
+							"              name: { type: \"string\" },",
+							"              category: { type: \"string\" },",
+							"              price: { type: \"number\" }",
+							"            },",
+							"            required: [\"id\", \"name\"]",
+							"          }",
+							"        }",
+							"      }",
+							"    },",
+							"    required: [\"data\"]",
+							"  };",
+							"",
+							"  var response = pm.response.json();",
+							"  pm.expect(pm.response.json()).to.have.jsonSchema(schema);",
+							"});",
+							"",
+							"pm.test(\"Data is grouped by category\", function () {",
+							"    const responseData = pm.response.json();",
+							"    pm.expect(responseData.data).to.be.an('object');",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/menu/group-by-category?mode=list&per_category=5",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"menu",
+						"group-by-category"
+					],
+					"query": [
+						{
+							"key": "mode",
+							"value": "list"
+						},
+						{
+							"key": "per_category",
+							"value": "5"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "BASE_URL",
+			"value": "https://localhost:3000"
+		},
+		{
+			"key": "menu_id",
+			"value": "1"
+		},
+		{
+			"key": "page",
+			"value": "1"
+		},
+		{
+			"key": "per_page",
+			"value": "10"
+		},
+		{
+			"key": "q",
+			"value": ""
+		},
+		{
+			"key": "category",
+			"value": ""
+		},
+		{
+			"key": "min_price",
+			"value": ""
+		},
+		{
+			"key": "max_price",
+			"value": ""
+		},
+		{
+			"key": "max_cal",
+			"value": ""
+		},
+		{
+			"key": "sort",
+			"value": "price:asc"
+		},
+		{
+			"key": "accessTokenAdi",
+			"value": ""
+		}
+	]
+}
