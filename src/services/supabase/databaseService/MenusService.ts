@@ -74,8 +74,7 @@ export default class MenusService {
     return data;
   }
 
-  async getMenusByQuery(req: Request){
-    const queryParams = req.query as unknown as MenuQueryParams;
+  async getMenusByQuery(queryParams: MenuQueryParams){
     const {
       q = '',
       category = '',
@@ -83,10 +82,13 @@ export default class MenusService {
       max_price = '1000000',
       max_cal = '1000',
       page = '1',
-      per_page = '5',
+      per_page = '10',
       sort = 'created_at:desc'
     } = queryParams;
   
+    const sortParam = sort 
+      ? decodeURIComponent(sort as string) 
+      : 'price:asc';
 
     // Convert query parameters to numbers
     const pageInt = parseInt(page);
@@ -100,7 +102,7 @@ export default class MenusService {
       .select('id, name, category, calories, price, ingredients, description', { count: 'exact' });
 
     if (q) {
-      query = query.or(`name.ilike.%${q}%,description.ilike.%${q}%`);
+      query = query.or(`name.ilike.%${q}%`);
     }
 
     // Category
@@ -122,8 +124,8 @@ export default class MenusService {
       query = query.lte('calories', maxCalInt);
     }
 
-    if (sort) {
-      const [field, order] = sort.split(':');
+    if (sortParam) {
+      const [field, order] = sortParam.split(':');
       const ascending = order === 'asc';
       query = query.order(field, { ascending });
     }

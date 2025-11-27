@@ -8,7 +8,6 @@ export const createMenusRoutes = (handler: any) => {
   router.get('/', handler.getMenusHandler);
   router.get('/group-by-category', handler.getMenusByCategoryModeHandler);
   router.get('/:id', handler.getMenuByIdHandler);
-  router.get('/:query', handler.getMenusByQuery);
   router.put('/:id', authMiddleware, handler.editMenuByIdHandler);
   router.delete('/:id', authMiddleware, handler.deleteMenuByIdHandler);
 

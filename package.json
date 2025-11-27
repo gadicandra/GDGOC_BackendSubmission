@@ -2,12 +2,11 @@
   "name": "gdgoc",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/server.js",
+  "main": "server.ts",
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "start": "tsx src/server.ts",
-    "lint": "eslint ./src",
-    "build": "tsc"
+    "lint": "eslint ./src"
   },
   "keywords": [],
   "author": "",

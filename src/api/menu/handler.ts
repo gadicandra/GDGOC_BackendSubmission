@@ -20,7 +20,6 @@ export default class MenusHandler {
     this.getMenusHandler = this.getMenusHandler.bind(this);
     this.getMenusByCategoryModeHandler = this.getMenusByCategoryModeHandler.bind(this);
     this.getMenuByIdHandler = this.getMenuByIdHandler.bind(this);
-    this.getMenusByQuery = this.getMenusByQuery.bind(this);
     this.editMenuByIdHandler = this.editMenuByIdHandler.bind(this);
     this.deleteMenuByIdHandler = this.deleteMenuByIdHandler.bind(this);
   }
@@ -53,6 +52,22 @@ export default class MenusHandler {
 
   async getMenusHandler(request: Request, response: Response, next: NextFunction) {
     try {
+      console.log('🔍 request.query:', request.query);
+      console.log('🔍 typeof request.query:', typeof request.query);
+      console.log('🔍 keys:', Object.keys(request.query));
+    
+      const hasQueryParams = Object.keys(request.query).length > 0;
+      console.log('🔍 hasQueryParams:', hasQueryParams);
+    
+      if (hasQueryParams) {
+        console.log('📤 Calling getMenusByQuery with:', request.query);
+        const result = await this._service.getMenusByQuery(request.query);
+        return response.status(200).json({
+          status: 'success',
+          ...result
+        });
+      }
+      
       const menus = await this._service.getAllMenus();
       response.status(200).json({
         status: 'success',
@@ -81,18 +96,6 @@ export default class MenusHandler {
       response.status(200).json({
         status: 'success',
         data: menu
-      });
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  async getMenusByQuery(request: Request, response: Response, next: NextFunction) {
-    try {
-      const result = await this._service.getMenusByQuery(request.query);
-      response.status(200).json({
-        status: 'success',
-        ...result
       });
     } catch (error) {
       next(error);
